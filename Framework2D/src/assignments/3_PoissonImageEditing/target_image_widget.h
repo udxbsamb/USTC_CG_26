@@ -1,4 +1,4 @@
-#pragma once
+/*#pragma once
 
 #include "source_image_widget.h"
 #include "common/image_widget.h"
@@ -56,4 +56,4 @@ class TargetImageWidget : public ImageWidget
     bool edit_status_ = false;
     bool flag_realtime_updating = false;
 };
-}  // namespace USTC_CG
+}  // namespace USTC_CG*/

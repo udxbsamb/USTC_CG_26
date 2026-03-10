@@ -6,6 +6,7 @@
 using namespace std;
 
 int main(int argc, char** argv) {
+	///*
 	PolynomialList p1("../data/P3.txt");
 	PolynomialList p2("../data/P4.txt");
 	PolynomialList p3;
@@ -19,6 +20,6 @@ int main(int argc, char** argv) {
 
 	p3 = p1 * p2;
 	p3.Print();
-
+	//*/
 	return 0;
-}
+}// have no time for further testing,hope it is well.

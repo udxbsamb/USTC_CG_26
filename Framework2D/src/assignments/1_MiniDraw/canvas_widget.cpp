@@ -6,6 +6,10 @@
 #include "imgui.h"
 #include "shapes/line.h"
 #include "shapes/rect.h"
+#include "shapes/ellipse.h" 
+#include "shapes/polygon.h"
+#include "shapes/freedraw.h"
+// HW1_TODO: more shape types, include their header files.
 
 namespace USTC_CG
 {
@@ -15,7 +19,11 @@ void Canvas::draw()
     // HW1_TODO: more interaction events
     if (is_hovered_ && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
         mouse_click_event();
-    mouse_move_event();
+    if (is_hovered_ && ImGui::IsMouseClicked(ImGuiMouseButton_Right))    
+    mouse_right_click_event();
+    
+    mouse_move_event();// used for freedraw. 
+
     if (!ImGui::IsMouseDown(ImGuiMouseButton_Left))
         mouse_release_event();
 
@@ -54,6 +62,23 @@ void Canvas::set_rect()
     shape_type_ = kRect;
 }
 
+void Canvas::set_ellipse()
+{
+    draw_status_ = false;
+    shape_type_ = kEllipse;
+}
+
+void Canvas::set_polygon()
+{
+    draw_status_ = false;
+    shape_type_ = kPolygon;
+}
+
+void Canvas::set_freedraw()
+{
+    draw_status_ = false;
+    shape_type_ = kFreedraw;
+}
 // HW1_TODO: more shape types, implements
 
 void Canvas::clear_shape_list()
@@ -99,7 +124,8 @@ void Canvas::draw_shapes()
 }
 
 void Canvas::mouse_click_event()
-{
+{   
+    std::vector<float> x_list, y_list;
     // HW1_TODO: Drawing rule for more primitives
     if (!draw_status_)
     {
@@ -123,18 +149,56 @@ void Canvas::mouse_click_event()
                     start_point_.x, start_point_.y, end_point_.x, end_point_.y);
                 break;
             }
-            // HW1_TODO: case USTC_CG::Canvas::kEllipse:
+            case USTC_CG::Canvas::kEllipse:
+            {
+                current_shape_ = std::make_shared<Ellipse>(
+                    start_point_.x, start_point_.y, end_point_.x, end_point_.y);
+                break;
+            }
+            case USTC_CG::Canvas::kPolygon:
+            {   
+                x_list={start_point_.x};
+                y_list={start_point_.y};
+                current_shape_ = std::make_shared<Polygon>(x_list,y_list);
+                break;
+            }
+            case USTC_CG::Canvas::kFreedraw:
+            {   
+                std::cout<<start_point_.x<<" "<<start_point_.y<<std::endl;
+                x_list={start_point_.x};
+                y_list={start_point_.y};
+                current_shape_ = std::make_shared<Freedraw>(x_list,y_list);
+                break;
+            }
+            // HW1_TODO
             default: break;
         }
     }
     else
     {
-        draw_status_ = false;
-        if (current_shape_)
+        
+        if (current_shape_&&shape_type_ != kPolygon)
         {
+            draw_status_ = false;
             shape_list_.push_back(current_shape_);
             current_shape_.reset();
+
         }
+        else if (shape_type_ == kPolygon)
+        {
+            current_shape_->add_control_point(end_point_.x, end_point_.y);
+            shape_list_.push_back(current_shape_);
+        }
+        
+    }
+}
+
+void Canvas::mouse_right_click_event(){
+    if (shape_type_ == kPolygon)
+    {   
+        draw_status_ = false;
+        shape_list_.push_back(current_shape_);
+        current_shape_.reset();
     }
 }
 
@@ -144,9 +208,14 @@ void Canvas::mouse_move_event()
     if (draw_status_)
     {
         end_point_ = mouse_pos_in_canvas();
-        if (current_shape_)
+         if (current_shape_)
         {
             current_shape_->update(end_point_.x, end_point_.y);
+        }
+        if (shape_type_== kFreedraw)
+        {
+            current_shape_->add_control_point(end_point_.x, end_point_.y);
+            shape_list_.push_back(current_shape_);
         }
     }
 }

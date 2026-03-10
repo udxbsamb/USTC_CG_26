@@ -31,7 +31,7 @@ class Shape
      * screen.
      */
     virtual void draw(const Config& config) const = 0;
-    /**
+    /*
      * Updates the state of the shape.
      * This function allows for dynamic modification of the shape, in response
      * to user interactions like dragging.
@@ -46,6 +46,7 @@ class Shape
      *
      * @param x, y Control point to be added. e.g. vertex of a polygon.
      */
-    virtual void add_control_point(float x, float y) {}
+    virtual void add_control_point(float x, float y) = 0;
+    
 };
 }  // namespace USTC_CG

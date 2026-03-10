@@ -30,7 +30,7 @@ class Line : public Shape
     // Overrides Shape's update function to adjust the end point during
     // interaction
     void update(float x, float y) override;
-
+    void add_control_point(float x, float y) override{(void)x;(void)y;};
    private:
     float start_point_x_, start_point_y_, end_point_x_, end_point_y_;
 };
