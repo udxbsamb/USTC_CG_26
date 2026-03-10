@@ -1,5 +1,5 @@
 #include "warping_widget.h"
-
+#include "warper/IDW_warper.h"
 #include <cmath>
 #include <iostream>
 
@@ -140,7 +140,7 @@ void WarpingWidget::warping()
                 {
                     // Apply warping function to (x, y), and we can get (x', y')
                     auto [new_x, new_y] =
-                        fisheye_warping(x, y, data_->width(), data_->height());
+                        fisheye_warping(x, y, data_->width(), data_->height()); 
                     // Copy the color from the original image to the result
                     // image
                     if (new_x >= 0 && new_x < data_->width() && new_y >= 0 &&
@@ -157,8 +157,23 @@ void WarpingWidget::warping()
         case kIDW:
         {
             // HW2_TODO: Implement the IDW warping
-            // use selected points start_points_, end_points_ to construct the map
-            std::cout << "IDW not implemented." << std::endl;
+            IDWWarper idw_warper;
+            idw_warper.get_points(start_points_, end_points_);
+            idw_warper.determine_coefficients();
+            for (int y = 0; y < data_->height(); ++y)
+            {
+                for (int x = 0; x < data_->width(); ++x)
+                {
+                    auto [new_x, new_y] = idw_warper.warp(x, y);
+                    if (new_x >= 0 && new_x < data_->width() && new_y >= 0 &&
+                        new_y < data_->height())
+                    {
+                        std::vector<unsigned char> pixel =
+                            data_->get_pixel(x, y);
+                        warped_image.set_pixel(new_x, new_y, pixel);
+                    }
+                }
+            }
             break;
         }
         case kRBF:

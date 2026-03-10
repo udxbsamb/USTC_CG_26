@@ -9,14 +9,16 @@
 // 3. Subclasses of Warper, IDWWarper and RBFWarper, should implement the
 // warp(...) function to perform the actual warping.
 #pragma once
-
+#include "common/image_widget.h"//for ImVec2,vector,pair,etc.
 namespace USTC_CG
 {
 class Warper
 {
    public:
     virtual ~Warper() = default;
-
+    virtual std::pair<int, int> warp(const int x,const int y) = 0; 
+    virtual void get_points(std::vector<ImVec2>& start_points, std::vector<ImVec2>& end_points) = 0; //use the selected points to determine the coefficients for interpolation
+    virtual void determine_coefficients() = 0;
     // HW2_TODO: A virtual function warp(...)
     
     // HW2_TODO: other functions or variables if you need
